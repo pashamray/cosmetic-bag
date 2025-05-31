@@ -1,54 +1,80 @@
-length = 220;
-width = 160;
-height = 35;
+/**
+ * Cosmetic bag 
+ *
+ * Author:  Pavlo Shamrai
+ * Email:   pashamray@gmail.com
+ * Date:    17.05.2025
+ * Update:  31.05.2025
+ * License: MIT
+**/
+
+width = 220;
+depth = 160;
+height = 50;
 radius = 40;
-border = 4;
+wall = 4;
+bottom = 2;
+tolerance = 0.5;
 
 $fn=300;
 
-union () {
-    *translate([-(length / 2 - radius), width / 2 - radius, -2]) {
-        difference() {
-            cylinder(h = height - 4, r = radius - border / 2, center = true);
-            cylinder(h = height + 10, r = radius - border, center = true);
-        }
-    }
-
-
+module main() {
     difference() {
-        difference () {
-            union () {
-                minkowski() {
-                    cube([length - (radius * 2), width - (radius * 2), height / 2], center = true);
-                    cylinder(h = height / 2, r = radius, center = true); 
-                }
-                    
-                translate ([0, 0, -2]) {
-                    minkowski() {
-                        cube([length - (radius * 2), width - (radius * 2), height / 2], center = true);
-                        cylinder(h = height / 2, r = (radius - 1 / 2) - border / 2, center = true); 
-                    }
-                }
+        minkowski() {
+            cylinder(h = height, r = radius, true);
+            cube([width - radius * 2, depth - radius * 2, height], center = true);
+        }
+        translate([0, 0, bottom]) {
+            minkowski() {
+                cube([width - radius * 2, depth - radius * 2, height - bottom], center = true);
+                cylinder(h = height, r = radius - wall, true);
             }
-                
-                translate ([0, 0, 2]) {
-                    union () {
-                        translate ([0, 0, (height / 2) - 2]) {
-                            minkowski() {
-                                cube([length - (radius * 2), width - (radius * 2), 4 ], center = true);
-                                cylinder(h = 4, r = radius - border / 2, center = true);
-                            }
-                        }
-                                    
-                        minkowski() {
-                            cube([length - (radius * 2), width - (radius * 2), height / 2 ], center = true);
-                            cylinder(h = height / 2, r = radius - border, center = true);
-                        }
-                    }
-                }
+        }
+        translate([0, 0, height / 2 - bottom / 2]) {
+            minkowski() {
+                cube([width - radius * 2, depth - radius * 2, bottom], center = true);
+                cylinder(h = bottom, r = radius - wall / 2, true);
             }
-        *translate([-(length / 2 - radius), width / 2 - radius, -2]) {
-            cylinder(h = height + 10, r = radius - border, center = true);
         }
     }
 }
+
+module top() {
+    difference() {
+        middle();
+        translate([-(width - radius * 2) / 2, (depth - radius * 2) / 2, -bottom]) {
+            cylinder(h = height + bottom, r = radius - wall , center = true);
+            
+        }
+    }
+}
+
+module middle() {
+    union() {
+        main();      
+        translate([0, 0, -(height / 2 + bottom)]) {
+            minkowski() {
+                cube([width - radius * 2, depth - radius * 2, bottom], center = true);
+                cylinder(h = bottom, r = (radius - wall / 2) - tolerance / 2, true);
+            }
+        }
+        translate([-(width - radius * 2) / 2, (depth - radius * 2) / 2, 0]) {
+            difference() {
+            cylinder(h = height - bottom * 2, r = radius - wall / 2, center = true);
+            cylinder(h = height - bottom * 2, r = radius - wall , center = true);
+            }
+        }
+    }
+}
+
+module bottom() {
+    main();
+}
+
+translate([0, 0, (height + 2) * 2]) {
+    top();
+}
+translate([0, 0, height + 2]) {
+    middle();
+}
+bottom();
