@@ -32,7 +32,8 @@ module body()
         tex_size   = tile_xy,  
         tex_depth  = tex_h,
         caps       = true
-    );    
+    );
+    down(size.z / 2 + bottom / 2) cuboid([size.x - wall * 2 - tolerance, size.y - wall * 2 - tolerance, bottom], rounding = corner_r - wall - tolerance / 2, edges=[LEFT+FRONT, LEFT+BACK, RIGHT+FRONT, RIGHT+BACK]);
 }
 
 module cup()
@@ -48,6 +49,7 @@ module top() {
         left(size.x / 2 - corner_r) back(size.y / 2 - corner_r) tube(h=size.z + bottom * 4, or=corner_r - wall * 2, wall=corner_r - wall * 2);
         
     }
+    *cuboid([size.x, wall * 2, size.z - bottom * 2]);
 }
 
 
@@ -63,7 +65,6 @@ module middle() {
         }
         tag("keep") {
             left(size.x / 2 - corner_r) back(size.y / 2 - corner_r) tube(h=size.z - bottom * 2, or=corner_r - wall, wall=wall);
-            down(size.z / 2 + bottom / 2) cuboid([size.x - wall * 2 - tolerance, size.y - wall * 2 - tolerance, bottom], rounding = corner_r - wall - tolerance / 2, edges=[LEFT+FRONT, LEFT+BACK, RIGHT+FRONT, RIGHT+BACK]);
         }
     }
 }
